@@ -1,8 +1,12 @@
 import streamlit as st
 import pandas as pd
-import pickle
 import plotly.express as px
 import os
+
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.ensemble import RandomForestClassifier
 
 st.set_page_config(
     page_title="Auto Insurance Fraud Detection",
@@ -18,15 +22,44 @@ def load_data():
     return claims, feature_rankings, model_results
 
 @st.cache_resource
-def load_model():
-    with open("trained_fraud_model.pkl", "rb") as f:
-        model = pickle.load(f)
-    return model
+def train_model_for_app(claims):
+    df_model = claims.drop(columns=["claim_id"])
+
+    y = df_model["fraud_flag"]
+    X = df_model.drop(columns=["fraud_flag"])
+
+    categorical_features = X.select_dtypes(include=["object"]).columns.tolist()
+    numeric_features = X.select_dtypes(exclude=["object"]).columns.tolist()
+
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("num", StandardScaler(), numeric_features),
+            ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_features)
+        ]
+    )
+
+    rf_model = RandomForestClassifier(
+        n_estimators=300,
+        random_state=42,
+        class_weight="balanced"
+    )
+
+    pipeline = Pipeline(
+        steps=[
+            ("preprocessor", preprocessor),
+            ("model", rf_model)
+        ]
+    )
+
+    pipeline.fit(X, y)
+
+    return pipeline
 
 claims, feature_rankings, model_results = load_data()
-model = load_model()
+model = train_model_for_app(claims)
 
 st.title("🚗 Auto Insurance Fraud Detection Dashboard")
+
 st.write(
     "Synthetic auto insurance claims analytics, feature selection, model comparison, "
     "fraud risk scoring, and confusion matrix evaluation."
@@ -386,7 +419,7 @@ with tab6:
     else:
         st.error(
             f"Confusion matrix image not found: {image_file}. "
-            "Please run train_models.py again to generate the confusion matrix images."
+            "Please make sure the PNG files are uploaded to GitHub."
         )
 
     st.subheader("Model Performance Summary")
