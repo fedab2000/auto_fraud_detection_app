@@ -1,0 +1,41 @@
+FEATURE RANKING COMPARISON: LASSO vs RIDGE vs ELASTIC NET
+===========================================================================
+
+Top Features Ranked by Average Rank
+
+        Feature  LASSO_Rank  Ridge_Rank  ElasticNet_Rank  Average_Rank  Rank_Difference
+postal_code_M7A           1           1                1      1.000000                0
+postal_code_B2R           2           2                5      3.000000                3
+postal_code_V9A           6          12                4      7.333333                8
+postal_code_A3U           9           3               14      8.666667               11
+postal_code_M9B           7           5               15      9.000000               10
+postal_code_T9K           8          14                6      9.333333                8
+postal_code_V5J           3          23                2      9.333333               21
+postal_code_B2U          13           4               16     11.000000               12
+postal_code_G3V           5          32                7     14.666667               27
+postal_code_N9Y          11          24                9     14.666667               15
+postal_code_N2H          16           7               26     16.333333               19
+postal_code_M7H          17           6               29     17.333333               23
+postal_code_H3C          10          40               10     20.000000               30
+postal_code_J6W           4          54                3     20.333333               51
+postal_code_J7S          21           8               33     20.666667               25
+postal_code_L4Q          24           9               34     22.333333               25
+postal_code_P5B          14          42               13     23.000000               29
+postal_code_A9P          19          43               19     27.000000               24
+postal_code_B5I          35          11               42     29.333333               31
+postal_code_P4E          12          70                8     30.000000               62
+postal_code_P7Z          26          49               21     32.000000               28
+postal_code_M7W          15          71               11     32.333333               60
+postal_code_K3J          38          16               47     33.666667               31
+postal_code_K3W          25          52               32     36.333333               27
+postal_code_G8J          20          68               22     36.666667               48
+postal_code_K2F          28          57               30     38.333333               29
+postal_code_R6A          27          62               27     38.666667               35
+postal_code_R8Y          23          83               17     41.000000               66
+postal_code_J3F          22          91               18     43.666667               73
+postal_code_S9S          37          60               39     45.333333               23
+
+Interpretation:
+- Average_Rank shows the overall importance of the feature across all three methods.
+- Rank_Difference shows how much the feature ranking changes between methods.
+- A low Average_Rank and low Rank_Difference means the feature is consistently important.
