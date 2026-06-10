@@ -6,7 +6,7 @@ import os
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 
 st.set_page_config(
     page_title="Auto Insurance Fraud Detection",
@@ -38,16 +38,25 @@ def train_model_for_app(claims):
         ]
     )
 
-    rf_model = RandomForestClassifier(
+    negative_count = (y == 0).sum()
+    positive_count = (y == 1).sum()
+    scale_pos_weight = negative_count / positive_count
+
+    xgb_model = XGBClassifier(
         n_estimators=300,
+        max_depth=6,
+        learning_rate=0.05,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        eval_metric="logloss",
         random_state=42,
-        class_weight="balanced"
+        scale_pos_weight=scale_pos_weight
     )
 
     pipeline = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
-            ("model", rf_model)
+            ("model", xgb_model)
         ]
     )
 
@@ -62,7 +71,7 @@ st.title("🚗 Auto Insurance Fraud Detection Dashboard")
 
 st.write(
     "Synthetic auto insurance claims analytics, feature selection, model comparison, "
-    "fraud risk scoring, and confusion matrix evaluation."
+    "fraud risk scoring, confusion matrix evaluation, and user-controlled fraud threshold."
 )
 
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -290,6 +299,19 @@ with tab5:
 
     st.write("Enter claim details below to estimate fraud probability.")
 
+    threshold = st.slider(
+        "Fraud Classification Threshold",
+        min_value=0.05,
+        max_value=0.95,
+        value=0.50,
+        step=0.05
+    )
+
+    st.caption(
+        "Lower threshold = more claims flagged as fraud. "
+        "Higher threshold = fewer claims flagged as fraud."
+    )
+
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -353,7 +375,8 @@ with tab5:
 
     if st.button("Score Claim"):
         fraud_probability = model.predict_proba(input_data)[0][1]
-        prediction = model.predict(input_data)[0]
+
+        prediction = 1 if fraud_probability >= threshold else 0
 
         if fraud_probability < 0.30:
             risk_level = "Low Risk"
@@ -364,11 +387,12 @@ with tab5:
 
         st.subheader("Fraud Risk Result")
 
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
 
         col1.metric("Fraud Probability", f"{fraud_probability * 100:.2f}%")
-        col2.metric("Predicted Class", "Fraud" if prediction == 1 else "Non-Fraud")
-        col3.metric("Risk Level", risk_level)
+        col2.metric("Threshold", f"{threshold:.2f}")
+        col3.metric("Predicted Class", "Fraud" if prediction == 1 else "Non-Fraud")
+        col4.metric("Risk Level", risk_level)
 
         st.warning(
             "This is a synthetic demonstration model. It should not be used for real claim "
@@ -398,14 +422,16 @@ with tab6:
         [
             "Logistic Regression",
             "Random Forest",
-            "Gradient Boosting"
+            "Gradient Boosting",
+            "XGBoost"
         ]
     )
 
     image_lookup = {
         "Logistic Regression": "logistic_regression_confusion_matrix.png",
         "Random Forest": "random_forest_confusion_matrix.png",
-        "Gradient Boosting": "gradient_boosting_confusion_matrix.png"
+        "Gradient Boosting": "gradient_boosting_confusion_matrix.png",
+        "XGBoost": "xgboost_confusion_matrix.png"
     }
 
     image_file = image_lookup[selected_model]
@@ -419,7 +445,7 @@ with tab6:
     else:
         st.error(
             f"Confusion matrix image not found: {image_file}. "
-            "Please make sure the PNG files are uploaded to GitHub."
+            "Please run train_models.py again and upload the PNG files to GitHub."
         )
 
     st.subheader("Model Performance Summary")
@@ -459,12 +485,17 @@ with tab6:
 
     elif selected_model == "Random Forest":
         st.success(
-            "Random Forest usually performs well on structured insurance data. "
-            "It is a strong candidate when you want good predictive performance and feature importance."
+            "Random Forest performs well on structured insurance data and provides useful feature importance."
         )
 
     elif selected_model == "Gradient Boosting":
         st.warning(
-            "Gradient Boosting can detect more complex fraud patterns. "
-            "Compare its False Positives and False Negatives against Random Forest before selecting the final model."
+            "Gradient Boosting can detect complex fraud patterns. "
+            "Compare its False Positives and False Negatives against XGBoost."
+        )
+
+    elif selected_model == "XGBoost":
+        st.success(
+            "XGBoost is often highly effective for structured fraud detection problems. "
+            "It is usually a strong candidate when optimizing ROC-AUC and recall."
         )
