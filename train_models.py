@@ -11,6 +11,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 
+from xgboost import XGBClassifier
+
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -52,16 +54,34 @@ X_train, X_test, y_train, y_test = train_test_split(
     stratify=y
 )
 
+# Handle imbalance for XGBoost
+negative_count = (y_train == 0).sum()
+positive_count = (y_train == 1).sum()
+scale_pos_weight = negative_count / positive_count
+
 # Models
 models = {
     "Logistic Regression": LogisticRegression(max_iter=5000),
+
     "Random Forest": RandomForestClassifier(
         n_estimators=300,
         random_state=42,
         class_weight="balanced"
     ),
+
     "Gradient Boosting": GradientBoostingClassifier(
         random_state=42
+    ),
+
+    "XGBoost": XGBClassifier(
+        n_estimators=300,
+        max_depth=6,
+        learning_rate=0.05,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        eval_metric="logloss",
+        random_state=42,
+        scale_pos_weight=scale_pos_weight
     )
 }
 
@@ -172,5 +192,6 @@ print("- trained_fraud_model.pkl")
 print("- logistic_regression_confusion_matrix.png")
 print("- random_forest_confusion_matrix.png")
 print("- gradient_boosting_confusion_matrix.png")
+print("- xgboost_confusion_matrix.png")
 
 print(f"\nBest model saved: {best_model_name}")
