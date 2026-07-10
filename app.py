@@ -806,17 +806,6 @@ with tab5:
                 report.recommended_action
             )
 
-        if shap_df is not None:
-            st.info(
-                "The Model Explanation section reflects the "
-                "actual XGBoost prediction. The current "
-                "investigation report still uses separate "
-                "business rules. The next enhancement will "
-                "connect the SHAP evidence directly to the "
-                "investigation report."
-            )
-
-
 # =====================================================
 # TAB 6: CONFUSION MATRICES
 # =====================================================
