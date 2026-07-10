@@ -6,3 +6,7 @@ plotly
 matplotlib
 seaborn
 xgboost
+pydantic
+pydantic-ai
+python-dotenv
+shap
