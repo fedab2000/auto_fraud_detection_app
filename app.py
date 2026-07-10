@@ -10,7 +10,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from xgboost import XGBClassifier
 
 from ai_investigator import generate_rule_based_report
-from model_explainer import get_shap_explanation
+#from model_explainer import get_shap_explanation
 
 
 # =====================================================
@@ -727,115 +727,7 @@ with tab5:
         # SHAP MODEL EXPLANATION
         # =================================================
 
-        st.divider()
-        st.subheader("Model Explanation")
-
-        shap_df = None
-
-        try:
-            shap_df = get_shap_explanation(
-                pipeline=model,
-                input_data=input_data,
-                top_n=10
-            )
-
-            if shap_df.empty:
-                st.info(
-                    "No SHAP contributors were returned "
-                    "for this claim."
-                )
-
-            else:
-                display_shap_df = shap_df[
-                    [
-                        "Feature",
-                        "Original Value",
-                        "SHAP Value",
-                        "Direction"
-                    ]
-                ].copy()
-
-                display_shap_df["SHAP Value"] = (
-                    display_shap_df[
-                        "SHAP Value"
-                    ].round(4)
-                )
-
-                st.dataframe(
-                    display_shap_df,
-                    use_container_width=True,
-                    hide_index=True
-                )
-
-                positive_features = shap_df[
-                    shap_df["SHAP Value"] > 0
-                ].copy()
-
-                negative_features = shap_df[
-                    shap_df["SHAP Value"] < 0
-                ].copy()
-
-                shap_col1, shap_col2 = st.columns(2)
-
-                with shap_col1:
-                    st.write(
-                        "**Top Factors Increasing Fraud Risk**"
-                    )
-
-                    if positive_features.empty:
-                        st.info(
-                            "No major positive contributors "
-                            "were identified."
-                        )
-
-                    else:
-                        for _, row in (
-                            positive_features
-                            .head(5)
-                            .iterrows()
-                        ):
-                            st.write(
-                                f"- **{row['Feature']}** "
-                                f"({row['Original Value']}): "
-                                f"{row['SHAP Value']:.4f}"
-                            )
-
-                with shap_col2:
-                    st.write(
-                        "**Top Factors Decreasing Fraud Risk**"
-                    )
-
-                    if negative_features.empty:
-                        st.info(
-                            "No major negative contributors "
-                            "were identified."
-                        )
-
-                    else:
-                        for _, row in (
-                            negative_features
-                            .head(5)
-                            .iterrows()
-                        ):
-                            st.write(
-                                f"- **{row['Feature']}** "
-                                f"({row['Original Value']}): "
-                                f"{row['SHAP Value']:.4f}"
-                            )
-
-                st.caption(
-                    "Positive SHAP values push the model toward "
-                    "fraud. Negative SHAP values push the model "
-                    "toward non-fraud. SHAP values represent "
-                    "model contributions, not probability percentages."
-                )
-
-        except Exception as exc:
-            st.error(
-                "The model explanation could not be generated. "
-                f"Details: {exc}"
-            )
-
+       
         # =================================================
         # RULE-BASED INVESTIGATION REPORT
         # =================================================
