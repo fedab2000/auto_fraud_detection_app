@@ -956,7 +956,8 @@ with tab6:
             "fraud detection problems. It is usually a strong "
             "candidate when optimizing ROC-AUC and recall."
         )
-    st.caption(
+
+st.caption(
     "Feda Bashbishi | AI Governance, Fraud Analytics, Business Intelligence & Machine Learning Portfolio"
 )
 
