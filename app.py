@@ -127,6 +127,26 @@ st.write(
     "user-controlled fraud threshold, explainable AI, and structured "
     "claim investigation reports."
 )
+st.markdown("""
+**MBA | M.Sc. Engineering | MDSAI (University of Waterloo)**  
+📧 fbashbis@uwaterloo.ca
+
+Experienced analytics leader with expertise in AI governance, fraud analytics, machine learning,
+business intelligence, predictive analytics, data strategy, and executive decision support.
+
+This portfolio showcases interactive applications developed using Python, SQL, Streamlit,
+Scikit-learn, XGBoost, NetworkX, graph analytics, and Power BI.
+
+The applications presented in this portfolio are intended for educational and
+demonstration purposes only. All data used within the applications is synthetic
+and does not represent real individuals, organizations, or events.
+
+Students, machine learning practitioners, software developers, QA professionals,
+and anyone interested in AI and machine learning development are welcome to visit my
+GitHub profile (fedab2000) to explore, download, and learn from these projects.
+""")
+
+st.markdown("---")
 
 
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
